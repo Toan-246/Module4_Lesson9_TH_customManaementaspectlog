@@ -38,10 +38,14 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ModelAndView showInformation(@PathVariable Long id) {
-        ModelAndView modelAndView = new ModelAndView("/customers/info");
-        Optional<Customer> customerOptional = customerService.findOne(id);
-        modelAndView.addObject("customer", customerOptional.get());
-        return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("/customers/info");
+			Optional<Customer> customerOptional = customerService.findOne(id);
+			modelAndView.addObject("customer", customerOptional.get());
+			return modelAndView;
+		} catch (Exception e) {
+			return new ModelAndView("redirect:/customers");
+		}
     }
 
     @PostMapping
@@ -51,8 +55,13 @@ public class CustomerController {
     }
 
     private Page<Customer> getPage(Pageable pageInfo) {
-        return customerService.findAll(pageInfo);
-    }
+		try {
+			return customerService.findAll(pageInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
     private Page<Customer> search(Optional<String> s, Pageable pageInfo) {
         return customerService.search(s.get(), pageInfo);
